@@ -1,0 +1,57 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('background.avif'); /* background picture */
+    background-size: cover; /* cover all*/
+    background-color: #b3ecff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    width: 80%; /* Adjust based on your preference */
+    height: 60%; /* Adjust based on your preference */
+    max-width: 1200px;
+    align-items: center;
+}
+
+.left-side, .right-side {
+    flex: 1; /* Flex grow, each side takes up equal space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-side {
+    text-align: center;
+}
+
+.right-side img {
+    max-width: 100%; /* Ensure the image is responsive and fits within the container */
+    height: auto;
+}
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ff85c0;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+
+
+button:hover {
+    background-color: #ff65a3;
+}
+
+img {
+    max-width: 80%; 
+    height: auto;
+}
