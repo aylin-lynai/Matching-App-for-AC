@@ -3,17 +3,17 @@ from models import db, flask_app as app, User, Image, Reaction
 
 @app.route('/users', methods=['POST'])
 def add_user():
-    name = request.json['name']
+    username = request.json['username']
     email = request.json['email']
     user_exists = User.query.filter_by(email=email).first()
     if user_exists:
         return jsonify({"error": "Diese E-Mail-Adresse ist bereits registriert."}), 400
 
 
-    user = User(name=name, email=email)
+    user = User(username=username, email=email)
     db.session.add(user)
     db.session.commit()
-    return jsonify({"id": user.id, "name": user.name, "email": user.email}), 201
+    return jsonify({"id": user.id, "username": user.username, "email": user.email}), 201
 
 @app.route('/images', methods=['GET'])
 def get_images():
