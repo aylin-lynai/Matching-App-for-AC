@@ -12,11 +12,13 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
+    reactions = relationship("Reaction", back_populates="user")
 
 class Image(db.Model):
     __tablename__ = 'images'
     id = db.Column(db.Integer, primary_key=True)
     image_path = db.Column(db.String(255), unique=True, nullable=False)
+    reactions = relationship("Reaction", back_populates="image")
 
 class Reaction(db.Model):
     __tablename__ = 'reactions'
