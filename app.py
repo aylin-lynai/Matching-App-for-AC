@@ -1,5 +1,18 @@
 from flask import Flask, request, jsonify
 from models import db, flask_app as app, User, Image, Reaction
+import dummy_data
+
+@app.route('/generate-dummy-data', methods=['POST'])
+def generate_dummy_data():
+    num_users = request.json.get('num_users', 10)
+    num_images = request.json.get('num_images', 10)
+    num_reactions = request.json.get('num_reactions', 50)
+    
+    dummy_data.add_dummy_users(num_users)
+    dummy_data.add_dummy_images(num_images)
+    dummy_data.add_dummy_reactions(num_reactions)
+    
+    return jsonify({"message": "Dummy data generated"}), 201
 
 @app.route('/users', methods=['POST'])
 def add_user():
