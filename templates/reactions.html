@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reactions</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Reactions</h1>
+        <ul class="list-group">
+            {% for reaction in reactions %}
+            <li class="list-group-item">
+                <p>Reaction ID: {{ reaction.id }}</p>
+                <p>User ID: {{ reaction.user_id }}</p>
+                <p>Image ID: {{ reaction.image_id }}</p>
+                <p>Reaction Value: {{ reaction.reaction_value }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

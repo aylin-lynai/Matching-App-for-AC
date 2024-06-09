@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Images</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Images</h1>
+        <ul class="list-group">
+            {% for image in images %}
+            <li class="list-group-item">
+                <img src="{{ url_for('static', filename='images/' ~ image.image_path.split('/')[-1]) }}" alt="Image" style="max-width: 200px;">
+                <p>Image ID: {{ image.id }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
