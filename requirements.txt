@@ -1,3 +1,15 @@
-opencv-python
+blinker==1.8.2
+click==8.1.7
 deepface
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+itsdangerous==2.2.0
+Jinja2==3.1.4
+MarkupSafe==2.1.5
+numpy==1.26.4
+opencv-python
+opencv-python-headless==4.9.0.80
+SQLAlchemy==2.0.30
 tf_keras
+typing_extensions==4.12.0
+Werkzeug==3.0.3
