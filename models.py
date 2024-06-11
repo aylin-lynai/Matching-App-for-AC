@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 flask_app = Flask(__name__)
-flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dummy-data.db'
 db = SQLAlchemy(flask_app)
 
 class User(db.Model):
