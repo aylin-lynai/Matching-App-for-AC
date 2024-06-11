@@ -1,29 +1,24 @@
 import cv2
 from deepface import DeepFace
 import time
-import random
 from models import flask_app, Reaction, db, Image
+from flask import Flask
 
 # Face cascade classifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-def handle_reactions(image_list, user_id = 444):
+def handle_reactions(user_id, image_list):
+    # Start video capture
     cap = cv2.VideoCapture(0)
-    image_index = 0
+    current_image_index = 0
+    start_time = time.time()
 
-    while image_index < len(image_list):
-        image_id = image_list[image_index]
-        start_time = time.time()
-        happy_detected = False
-
-        while time.time() - start_time < 3:
+    with flask_app.app_context():
+        while current_image_index < len(image_list):
             # Capture each frame
             ret, frame = cap.read()
             if not ret:
-                continue
-
-            # Display the resulting frame 
-            # cv2.imshow('frame', frame) 
+                break
 
             # Convert frame to grayscale
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -46,30 +41,39 @@ def handle_reactions(image_list, user_id = 444):
 
                 # Check if the dominant emotion is 'happy' or not
                 if dominant_emotion == 'happy':
-                    happy_detected = True
-                    break
+                    emotion_label = 1
+                else:
+                    emotion_label = 0
 
-            if happy_detected:
-                break
+                # Draw rectangle around the face and label with the emotion
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                cv2.putText(frame, f"{dominant_emotion}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
-            # Press 'q' to exit manually (optional)
+                # Store the reaction in the database
+                image_path = image_list[current_image_index]
+                image = Image.query.filter_by(image_path=image_path).first()
+                reaction = Reaction(user_id=user_id, image_id=image.id, reaction_value=emotion_label)
+                db.session.add(reaction)
+
+            # Add text "image_i" on the frame
+            cv2.putText(frame, f"image_{current_image_index + 1}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
+            # Display the resulting frame
+            cv2.imshow('Real-time Emotion Detection', frame)
+
+            # Check if 3 seconds have passed
+            if time.time() - start_time > 3:
+                start_time = time.time()
+                current_image_index += 1
+
+                # Commit the reactions to the database
+                db.session.commit()
+
+            # Press 'q' to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                cap.release()
-                cv2.destroyAllWindows()
-                return
-
-        # Store the reaction in the database
-        with flask_app.app_context():
-            # reaction_value = True if happy_detected else False 
-            reaction_value = happy_detected
-            reaction = Reaction(user_id=user_id, image_id=image_id, reaction_value=reaction_value)
-            db.session.add(reaction)
-            db.session.commit()
-
-        image_index += 1
+                break
 
     # Release the capture and close all windows
     cap.release()
     cv2.destroyAllWindows()
-
 

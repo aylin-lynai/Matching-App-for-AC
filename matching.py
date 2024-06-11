@@ -34,7 +34,7 @@ def create_dummy_data():
 
         # Create reactions
         for user in generated_users:
-           handle_reactions(image_paths, user.id)
+           handle_reactions(user.id, image_paths)
         
         #db.session.commit()
 
