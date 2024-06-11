@@ -33,6 +33,9 @@ class Reaction(db.Model):
     user = relationship("User", back_populates="reactions")
     image = relationship("Image", back_populates="reactions")
 
+    __table_args__ = (UniqueConstraint('user_id', 'image_id', name='_user_image_uc'),)
+
+
 class Match(db.Model):
     __tablename__ = 'matches'
     id = db.Column(db.Integer, primary_key=True)
