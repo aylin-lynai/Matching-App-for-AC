@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from sqlalchemy import UniqueConstraint
 
 
 flask_app = Flask(__name__)
@@ -32,6 +33,9 @@ class Reaction(db.Model):
     # confidence = db.Column(db.Float, nullable=False) - depending on emotion detection use this as confidence of the emotion
     user = relationship("User", back_populates="reactions")
     image = relationship("Image", back_populates="reactions")
+
+    __table_args__ = (UniqueConstraint('user_id', 'image_id', name='_user_image_uc'),)
+
 
 class Match(db.Model):
     __tablename__ = 'matches'
