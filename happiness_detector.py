@@ -57,9 +57,11 @@ def handle_reactions(user_id, image_list):
 
         # Store the reaction in the database
         with flask_app.app_context():
-            reaction_value = 1 if happy_detected else 0
+            # reaction_value = True if happy_detected else False 
+            reaction_value = happy_detected
             reaction = Reaction(user_id=user_id, image_id=image_id, reaction_value=reaction_value)
             db.session.add(reaction)
+            db.session.commit()
 
         image_index += 1
 
