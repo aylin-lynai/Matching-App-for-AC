@@ -7,7 +7,7 @@ from models import flask_app, Reaction, db, Image
 # Face cascade classifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-def handle_reactions(user_id, image_list):
+def handle_reactions(image_list, user_id = 444):
     cap = cv2.VideoCapture(0)
     image_index = 0
 
@@ -21,6 +21,9 @@ def handle_reactions(user_id, image_list):
             ret, frame = cap.read()
             if not ret:
                 continue
+
+            # Display the resulting frame 
+            # cv2.imshow('frame', frame) 
 
             # Convert frame to grayscale
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

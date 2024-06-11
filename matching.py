@@ -29,13 +29,14 @@ def create_dummy_data():
             if image_path not in existing_images:
                 db.session.add(Image(image_path=image_path))
         
-        #db.session.commit()
+        db.session.commit()
+        generated_users = User.query.all()
 
         # Create reactions
-        for user in users:
-           handle_reactions(user.id, image_paths)
+        for user in generated_users:
+           handle_reactions(image_paths, user.id)
         
-        db.session.commit()
+        #db.session.commit()
 
 def calculate_similarity(user1, user2):
     reactions1 = {reaction.image_id: reaction.reaction_value for reaction in user1.reactions}
