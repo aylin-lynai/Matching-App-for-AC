@@ -7,21 +7,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="left-side">
-   
-            <img src="picture/Login.png" alt="Bikini" class="side-image">
+    <div class="right-side">
+        <img src="picture/Register.png" alt="Pinapple" class="side-image">
 </div>
 <div class="right-side">
-    <h2>Login</h2>
-    <form id="loginForm">
+    
+    <h2>Register</h2>
+    <form id="registerForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
         <label for="email">Email:</label><br>
         <input type="email" id="email" name="email" required><br>
         <label for="password">Password:</label><br>
         <input type="password" id="password" name="password" required><br>
-        <input type="submit" value="Login">
+        <input type="submit" value="Register">
     </form>
-    <button id="NewHere">New Here?</button>
 
     <button id="JumpToTest">JumpToTest</button>
 </div>
@@ -32,33 +32,9 @@
     
 
     <script>
-           document.getElementById('NewHere').addEventListener('click', function() {
-            window.location.href = 'Register.html'; // 
-        });
         document.getElementById('JumpToTest').addEventListener('click', function() {
             window.location.href = 'CameraTest.html'; // 
         });
-        document.getElementById('loginForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const form = e.target;
-            const data = {
-                email: form.email.value,
-                password: form.password.value
-            };
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            if (response.ok) {
-                window.location.href = result.redirect;
-            } else {
-                alert(result.error);
-            }
-        };
 
         document.getElementById('registerForm').onsubmit = async function(e) {
             e.preventDefault();
