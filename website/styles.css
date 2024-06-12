@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-image: url('background.avif'); /* background picture */
+    background-image: url('picture/background.avif'); /* background picture */
     background-size: cover; /* cover all*/
     background-color: #b3ecff;
     display: flex;
@@ -37,7 +37,7 @@ body {
 button {
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #ff85c0;
+    background-color: #859bffcc;
     border: none;
     color: white;
     border-radius: 10px;
@@ -48,7 +48,7 @@ button {
 
 
 button:hover {
-    background-color: #ff65a3;
+    background-color: #7c65ffda;
 }
 
 img {

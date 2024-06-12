@@ -9,13 +9,18 @@
 <div class="container">
     <div class="left-side">
         
-        <img src="PythonMeme.jpg" alt="Test 1">
+        <img src="picture/PythonMeme.jpg" alt="Test 1">
         </div>
         <div class="right-side">
         <h1>TestPicture1</h1>
     <button id="resultButton">Show Result</button>
 </div>
 </div>
-<script src="TestPageScript.js"></script>
+<script>
+    document.getElementById('resultButton').addEventListener('click', function() {
+    window.location.href = 'ResultPage.html'; // jump to Resultpage
+});
+
+</script>
 </body>
 </html>

@@ -10,23 +10,27 @@
 <body>
 <div class="container">
     <div class="left-side">
-        <h1>Show your </br>  
-        True Self</br>   
-        and </br> 
+        <h1>Show Your True Self</br>   
+        &</br> 
         Find Someone </h1>
 
-        <button id="startButton">Get Start</button>
-        <button onclick="openVideoWindow()">Open Video</button>
-
-
-        ,++
+        <h2>We need to use camera to catch you face. </br>
+            If ok, please:
+          </h2>
+    <button id="StartButton">Start</button>
 
         
     </div>
     <div class="right-side">
-        <img src="WhoAMI.png" alt="who am i" class="side-image">
+        <img src="picture/WhoAMI.png" alt="who am i" class="side-image">
     </div>
 </div>
-<script src="Startscript.js"></script>
+<script>
+    document.getElementById('StartButton').addEventListener('click', function() {
+        window.location.href = 'Login.html'; // jump to Resultpage
+    });
+ 
+
+</script>
 </body>
 </html>
