@@ -59,7 +59,6 @@ class UserMatch(db.Model):
     def __repr__(self):
         return f"<UserMatch(user_id_1={self.user_id_1}, user_id_2={self.user_id_2}, match_id={self.match_id})>"
 
-# Verschiebe db.create_all() in einen Anwendungskontext
 if __name__ == '__main__':
     with flask_app.app_context():
         db.create_all()

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+        <h1>Welcome, {{ current_user.name }}!</h1>
+        <a href="/logout">Logout</a>
+        <ul>
+            <li><a href="/users">View All Users</a></li>
+            <li><a href="/images/view">View All Images</a></li>
+            <li><a href="/reactions">View All Reactions</a></li>
+            <!-- Add other links as needed -->
+        </ul>
+    {% else %}
+        <h1>Welcome to the Matching App!</h1>
+        <a href="/login">Login</a> | <a href="/register">Register</a>
+    {% endif %}
+</body>
+</html>

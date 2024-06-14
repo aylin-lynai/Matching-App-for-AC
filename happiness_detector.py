@@ -28,34 +28,26 @@ def handle_reactions(user_id, image_list):
             # Convert grayscale to RGB
             rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
 
-            # Detect faces in the frame
+            # Detect dominat face and emotion in the frame
             faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+            largest_face = max(faces, key=lambda face: face[2] * face[3])
+            x, y, w, h = largest_face
+            face_roi = rgb_frame[y:y + h, x:x + w]
+            result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
+            dominant_emotion = result[0]['dominant_emotion']
 
-            for (x, y, w, h) in faces:
-                # Extract the face ROI (Region of Interest)
-                face_roi = rgb_frame[y:y + h, x:x + w]
+            # Check if the dominant emotion is 'happy' or not
+            if dominant_emotion == 'happy':
+                reaction_value = 1
+            else:
+                reaction_value = 0
 
-                # Perform emotion analysis on the face ROI
-                result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
+            # Draw rectangle around the face and label with the emotion
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.putText(frame, f"{dominant_emotion}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
-                # Determine the dominant emotion
-                dominant_emotion = result[0]['dominant_emotion']
+            # Store the reaction in the database
 
-                # Check if the dominant emotion is 'happy' or not
-                if dominant_emotion == 'happy':
-                    reaction_value = 1
-                else:
-                    reaction_value = 0
-
-                # Draw rectangle around the face and label with the emotion
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                cv2.putText(frame, f"{dominant_emotion}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-
-                # Store the reaction in the database
-                image_path = image_list[current_image_index]
-                image = Image.query.filter_by(image_path=image_path).first()
-                reaction = Reaction(user_id=user_id, image_id=image.id, reaction_value=reaction_value)
-                db.session.add(reaction)
 
             # Add text "image_i" on the frame
             cv2.putText(frame, f"image_{current_image_index + 1}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
@@ -64,12 +56,16 @@ def handle_reactions(user_id, image_list):
             cv2.imshow('Real-time Emotion Detection', frame)
 
             # Check if 3 seconds have passed
-            if time.time() - start_time > 1:
+            if time.time() - start_time > 2 or reaction_value == 1 :
+                image_path = image_list[current_image_index]
+                image = Image.query.filter_by(image_path=image_path).first()
+                reaction = Reaction(user_id=user_id, image_id=image.id, reaction_value=reaction_value)
+                db.session.add(reaction)
+                    # Commit the reactions to the database
+                db.session.commit()
                 start_time = time.time()
                 current_image_index += 1
-
-                # Commit the reactions to the database
-                db.session.commit()
+                
 
             # Press 'q' to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):
