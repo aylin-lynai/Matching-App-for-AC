@@ -32,6 +32,9 @@ def create_dummy_data():
         db.session.commit()
         generated_users = User.query.all()
 
+        Reaction.query.delete()
+        db.session.commit()
+
         # Create reactions
         for user in generated_users:
            handle_reactions(user.id, image_paths)

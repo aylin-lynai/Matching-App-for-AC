@@ -4,6 +4,8 @@ import time
 from models import flask_app, Reaction, db, Image
 from flask import Flask
 
+#  Inspired by https://github.com/manish-9245/Facial-Emotion-Recognition-using-OpenCV-and-Deepface
+
 # Face cascade classifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
@@ -41,9 +43,9 @@ def handle_reactions(user_id, image_list):
 
                 # Check if the dominant emotion is 'happy' or not
                 if dominant_emotion == 'happy':
-                    emotion_label = 1
+                    reaction_value = 1
                 else:
-                    emotion_label = 0
+                    reaction_value = 0
 
                 # Draw rectangle around the face and label with the emotion
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
@@ -52,7 +54,7 @@ def handle_reactions(user_id, image_list):
                 # Store the reaction in the database
                 image_path = image_list[current_image_index]
                 image = Image.query.filter_by(image_path=image_path).first()
-                reaction = Reaction(user_id=user_id, image_id=image.id, reaction_value=emotion_label)
+                reaction = Reaction(user_id=user_id, image_id=image.id, reaction_value=reaction_value)
                 db.session.add(reaction)
 
             # Add text "image_i" on the frame
@@ -62,7 +64,7 @@ def handle_reactions(user_id, image_list):
             cv2.imshow('Real-time Emotion Detection', frame)
 
             # Check if 3 seconds have passed
-            if time.time() - start_time > 3:
+            if time.time() - start_time > 1:
                 start_time = time.time()
                 current_image_index += 1
 
