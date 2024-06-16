@@ -4,26 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h2>Register</h2>
-    <form id="registerForm">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" required><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br>
-        <input type="submit" value="Register">
-    </form>
+    <div class="right-side">
+        <img src="{{ url_for('static', filename='images/register.jpg') }}" alt="register">
+    </div>
+    <div class="right-side">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br>
+            <input type="submit" value="Register">
+        </form>
+        <button id="JumpToTest">JumpToTest</button>
+    </div>
+
     <script>
+        document.getElementById('JumpToTest').addEventListener('click', function() {
+            window.location.href = '/cameratest'; 
+        });
+
         document.getElementById('registerForm').onsubmit = async function(e) {
             e.preventDefault();
             const form = e.target;
             const data = {
-                name: form.name.value,
-                email: form.email.value,
-                password: form.password.value
+                username: form.username.value,
+                email: form.email.value
             };
             const response = await fetch('/register', {
                 method: 'POST',
@@ -32,10 +41,11 @@
                 },
                 body: JSON.stringify(data)
             });
+            const result = await response.json();
             if (response.ok) {
                 window.location.href = '/login';
             } else {
-                alert('Registration failed');
+                alert('Registration failed: ' + result.error);
             }
         };
     </script>

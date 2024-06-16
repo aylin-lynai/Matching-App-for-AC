@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Test Page</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="left-side">
+        <div id="imageContainer">
+            <img src="" id="memeImage" alt="Meme Image">
+        </div>
+    </div>
+        
+    <div class="right-side">
+            <h1>TestPicture</h1>
+            <button id="nextButton">Next</button>
+            
+        <button id="resultButton">Jump to Result</button>
+    </div>
+</div>
+<script>
+    document.getElementById('resultButton').addEventListener('click', function() {
+    window.location.href = '/resultpage'; // jump to Resultpage
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const nextButton = document.getElementById('nextButton');
+    let usedImages = [];
+    let clickCount = 0;
+
+    nextButton.addEventListener('click', function() {
+        if (clickCount < 10) {
+            displayRandomImage();
+            clickCount++;
+        } else {
+            window.location.href = '/resultpage'; // after 10 times jump to resultpage
+        }
+    });
+
+    function displayRandomImage() {
+        // add meme
+        const images = ['57.jpg',
+                        '58.jpg',
+                        '59.jpg',
+                        '60.jpg',
+                        '61.jpg',
+                        '62.jpg',
+                        '63.jpg',
+                        '64.jpg',
+                        '65.jpg',
+                        '66.jpg',
+                        '67.jpg',
+                        '68.jpg',
+                        '69.jpg',
+                        '70.jpg',
+                        '71.jpg',
+                        ];
+        let randomImage;
+
+        do {
+            randomImage = images[Math.floor(Math.random() * images.length)];
+        } while (usedImages.includes(randomImage));
+
+        usedImages.push(randomImage);
+        if (usedImages.length === images.length) {
+            usedImages = []; // reset if all used
+        }
+
+        const imgElement = document.getElementById('memeImage');
+        imgElement.src = `meme/${randomImage}`;
+    }
+});
+
+
+</script>
+</body>
+</html>

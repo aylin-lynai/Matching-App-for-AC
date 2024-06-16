@@ -17,6 +17,22 @@ class User(db.Model):
     user_matches_1 = relationship("UserMatch", back_populates="user1", foreign_keys="[UserMatch.user_id_1]")
     user_matches_2 = relationship("UserMatch", back_populates="user2", foreign_keys="[UserMatch.user_id_2]")
 
+# Methods required by Flask-Login
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+    
 class Image(db.Model):
     __tablename__ = 'images'
     id = db.Column(db.Integer, primary_key=True)

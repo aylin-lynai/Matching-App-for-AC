@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, flask_app as app, User, Image, Reaction
+from sqlalchemy.exc import IntegrityError
+import traceback
 import dummy_data
+
+app.secret_key = 'supersecretkey' 
 
 @app.route('/generate-dummy-data', methods=['POST'])
 def generate_dummy_data():
@@ -28,72 +31,102 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return render_template('register.html')
+    elif request.method == 'POST':
         if request.is_json:
-            data = request.get_json()
-            name = data['name']
-            email = data['email']
-            password = generate_password_hash(data['password'], method='pbkdf2:sha256')
-            new_user = User(name=name, email=email, password=password)
-            db.session.add(new_user)
-            db.session.commit()
-            return jsonify({"message": "User registered successfully"}), 201
-        return jsonify({"error": "Request must be JSON"}), 415
-    return render_template('register.html')
+            try:
+                data = request.get_json()
+                print("Data received: ", data)  # Debug print
+                username = data['username']
+                email = data['email']
+                new_user = User(username=username, email=email)
+                db.session.add(new_user)
+                db.session.commit()
+                return jsonify({"message": "User registered successfully"}), 201
+            except IntegrityError as e:
+                db.session.rollback()
+                print("Integrity Error: ", e)  # More detailed error print
+                return jsonify({"error": "This email is already registered."}), 409
+            except Exception as e:
+                db.session.rollback()
+                print("Exception Error: ", e)  # Print full error message
+                print("Traceback: ", traceback.format_exc())  # Print traceback
+                return jsonify({"error": str(e)}), 500
+        else:
+            return jsonify({"error": "Request must be JSON"}), 415
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
         if request.is_json:
             data = request.get_json()
+            username = data['username']
             email = data['email']
-            password = data['password']
-            user = User.query.filter_by(email=email).first()
-            if user and check_password_hash(user.password, password):
+            user = User.query.filter_by(username=username, email=email).first()
+            if user:
                 login_user(user)
-                return jsonify({"message": "Login successful", "redirect": "/"})
-            return jsonify({"error": "Invalid credentials"}), 401
-        return jsonify({"error": "Request must be JSON"}), 415
-    return render_template('login.html')
+                return jsonify({"message": "Login successful", "redirect": "/cameratest"})
+            else:
+                return jsonify({"error": "Invalid credentials"}), 401
+        else:
+            return jsonify({"error": "Request must be JSON"}), 415
+
+
+@app.route('/cameratest')
+# @login_required
+def camera_test():
+    return render_template('cameratest.html')
+
+@app.route('/test')
+# @login_required
+def test():
+    return render_template('test.html')
+
+@app.route('/matchpage')
+# @login_required
+def match_page():
+    return render_template('matchpage.html')
+
+@app.route('/resultpage')
+# @login_required
+def result_page():
+    return render_template('resultpage.html')
 
 @app.route('/logout')
-@login_required
+# @login_required
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect(url_for('startpage'))
 
 @app.route('/admin/users')
-@login_required
 def admin_users():
-    if current_user.is_authenticated and current_user.is_admin:
-        users = User.query.all()
-        return render_template('admin_users.html', users=users)
-    else:
-        return "Unauthorized", 403
-
-
+    users = db.session.query(User.id, User.username, User.email).all()
+    return render_template('admin_users.html', users=users)
 
 @app.route('/users', methods=['POST'])
 def add_user():
     if request.is_json:
         data = request.get_json()
-        name = data['name']
+        username = data['username']
         email = data['email']
-        user = User(name=name, email=email)
+        user = User(username=username, email=email)
         db.session.add(user)
         db.session.commit()
-        return jsonify({"id": user.id, "name": user.name, "email": user.email}), 201
+        return jsonify({"id": user.id, "username": user.username, "email": user.email}), 201
     return jsonify({"error": "Request must be JSON"}), 415
 
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
-    return jsonify([{"id": user.id, "name": user.name, "email": user.email} for user in users])
+    return jsonify([{"id": user.id, "username": user.username, "email": user.email} for user in users])
 
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = User.query.get_or_404(user_id)
-    return jsonify({"id": user.id, "name": user.name, "email": user.email})
+    return jsonify({"id": user.id, "username": user.username, "email": user.email})
 
 @app.route('/images', methods=['POST'])
 def add_image():
@@ -147,10 +180,9 @@ def list_users():
     users = User.query.all()
     return render_template('users.html', users=users)
 
-
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('startpage.html')
 
 if __name__ == '__main__':
     with app.app_context():

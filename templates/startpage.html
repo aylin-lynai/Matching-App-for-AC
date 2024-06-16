@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Show Your True Self</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="left-side">
+        <h1>Show Your True Self</br>   
+        &</br> 
+        Find Someone </h1>
+
+        <h2>We need to use camera to catch you face. </br>
+            If ok, please:
+          </h2>
+    <button id="StartButton">Start</button>
+
+    </div>
+    <div class="right-side">
+        <img src="{{ url_for('static', filename='images/WhoAMI.jpg') }}" alt="WhoAMI">
+    </div>
+</div>
+<script>
+    document.getElementById('StartButton').addEventListener('click', function() {
+        window.location.href = '/login';
+    });
+ 
+
+</script>
+</body>
+</html>

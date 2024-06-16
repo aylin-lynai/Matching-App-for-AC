@@ -4,23 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h2>Login</h2>
-    <form id="loginForm">
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br>
-        <input type="submit" value="Login">
-    </form>
+    <div class="container">
+        <div class="left-side">
+            <img src="{{ url_for('static', filename='images/Login.jpg') }}" alt="Login">
+        </div>
+        <div class="right-side">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="username">Username:</label><br>
+                <input type="text" id="username" name="username" required><br>
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email" required><br>
+                <input type="submit" value="Login">
+            </form>
+            <button id="NewHere">New Here?</button>
+            <button id="JumpToTest">JumpToTest</button>
+        </div>
+    </div>
+
     <script>
+        document.getElementById('NewHere').addEventListener('click', function() {
+            window.location.href = '/register';
+        });
+
+        document.getElementById('JumpToTest').addEventListener('click', function() {
+            window.location.href = '/cameratest';
+        });
+
         document.getElementById('loginForm').onsubmit = async function(e) {
             e.preventDefault();
             const form = e.target;
             const data = {
-                email: form.email.value,
-                password: form.password.value
+                username: form.username.value,
+                email: form.email.value
             };
             const response = await fetch('/login', {
                 method: 'POST',

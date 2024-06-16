@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Look yourself</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="left-side">
+    <h1>See your heart</h1>
+    <button id="matchingButton">Matching</button>
+</div>
+<div class="right-side">
+    <img src="{{ url_for('static', filename='images/PersonalityResultSample.jpg') }}" alt="result">
+</div>
+</div>
+<script>
+    document.getElementById('matchingButton').addEventListener('click', function() {
+    window.location.href = '/matchpage'; // 
+});
+
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@
     <h1>List of Registered Users</h1>
     <ul>
         {% for user in users %}
-            <li>{{ user.name }} - {{ user.email }}</li>
+            <li>{{ user[1] }} - {{ user[2] }}</li>  <!-- Accessing username and email by index -->
         {% endfor %}
     </ul>
     <a href="/">Back to Home</a>
