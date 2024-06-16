@@ -24,6 +24,7 @@
     document.getElementById('resultButton').addEventListener('click', function() {
     window.location.href = '/resultpage'; // jump to Resultpage
 });
+
 document.addEventListener('DOMContentLoaded', function() {
     const nextButton = document.getElementById('nextButton');
     let usedImages = [];
@@ -73,6 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const imgElement = document.getElementById('memeImage');
         imgElement.src = `{{ url_for('static', filename='images/memes/') }}` + randomImage;
     }
+
+    // Display the first random image when the page loads
+    displayRandomImage();
 });
 </script>
 </body>
