@@ -5,7 +5,7 @@ from sqlalchemy import UniqueConstraint
 
 
 flask_app = Flask(__name__)
-flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dummy-data.db'
+flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(flask_app)
 
 class User(db.Model):
