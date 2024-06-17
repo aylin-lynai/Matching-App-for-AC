@@ -7,27 +7,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div class="right-side">
+    <div class="container">
+    <div class="left-side">
         <img src="{{ url_for('static', filename='images/register.jpg') }}" alt="register">
     </div>
+
     <div class="right-side">
         <h2>Register</h2>
         <form id="registerForm">
-            <label for="username">Username:</label><br>
-            <input type="text" id="username" name="username" required><br>
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br>
-            <input type="submit" value="Register">
+            
+            <input type="text" id="username" name="username" placeholder="username" class="input-item"required><br>
+          
+            <input type="email" id="email" name="email" placeholder="email" class="input-item"required><br>
+           
+            <button id="submit">Register</button> <br>             
+            <button id="JumpToTest">JumpToTest</button>
         </form>
-        <button id="JumpToTest">JumpToTest</button>
+       
     </div>
-
+</div>
     <script>
         document.getElementById('JumpToTest').addEventListener('click', function() {
             window.location.href = '/cameratest'; 
         });
 
-        document.getElementById('registerForm').onsubmit = async function(e) {
+        document.getElementById('registerForm').getElementById('submit').addEventListener('click',  async function(e) {
             e.preventDefault();
             const form = e.target;
             const data = {
@@ -47,7 +51,7 @@
             } else {
                 alert('Registration failed: ' + result.error);
             }
-        };
+        });
     </script>
 </body>
 </html>
