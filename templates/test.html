@@ -19,12 +19,12 @@
     <div class="right-side">
         <h1>TestPicture</h1>
         <button id="nextButton">Next</button>
-        <button id="resultButton">Jump to Result</button>
+        <button id="resultButton">Jump to Match</button>
     </div>
 </div>
 <script>
 document.getElementById('resultButton').addEventListener('click', function() {
-    window.location.href = '/resultpage'; // jump to Resultpage
+    window.location.href = '/matchpage'; // jump to matchpage
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (availableImages.length > 0) {
                 displayImageByIndex(currentImageIndex);
             } else {
-                window.location.href = '/resultpage'; // If no available images, redirect to result page
+                window.location.href = '/matchpage'; // If no available images, redirect to matchpage 
             }
         })
         .catch(error => {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentImageIndex++;
             clickCount++;
         } else {
-            window.location.href = '/resultpage'; // after all available images, jump to resultpage
+            window.location.href = '/matchpage'; // after all available images, jump to matchpage
         }
     });
 
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const imgElement = document.getElementById('memeImage');
             imgElement.src = `{{ url_for('static', filename='images/memes/') }}` + availableImages[index];
         } else {
-            window.location.href = '/resultpage'; // After showing all available images, jump to result page
+            window.location.href = '/matchpage'; // After showing all available images, jump to matchpage 
         }
     }
 
