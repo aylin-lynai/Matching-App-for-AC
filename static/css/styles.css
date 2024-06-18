@@ -1,39 +1,92 @@
+/* Global Styles */
 body {
     font-family: Arial, sans-serif;
     background-image: url("../images/background.jpg");
-    background-size: cover; /* cover all*/
+    background-size: cover;
     background-color: #b3ecff;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    padding: 20px;
     margin: 0;
+    flex-direction: column;
+    overflow: hidden;
 }
 
+/* Container Styling */
 .container {
     display: flex;
-    width: 80%; /* Adjust based on your preference */
-    height: 60%; /* Adjust based on your preference */
+    flex-wrap: wrap;
+    width: 90%;
     max-width: 1200px;
     align-items: center;
+    justify-content: space-around;
+    padding: 20px;
 }
 
+/* Left and Right Side Panels */
 .left-side, .right-side {
-    flex: 1; /* Flex grow, each side takes up equal space */
+    flex: 1 1 45%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 10px;
+    min-width: 300px;
+    max-width: 500px;
+    padding: 10px;
 }
 
-.left-side {
+/* Ensuring Images Fit Within Container and Screen */
+.left-side img, .right-side img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 40vh; /* Each image takes up a maximum of 40% of the viewport height */
+    object-fit: contain; /* Ensure the image fits within the container without being cropped */
+}
+
+/* Ensure that both images together fit within the viewport */
+.left-side, .right-side {
+    max-height: 80vh; /* Ensure the combined height does not exceed 80% of the viewport height */
+    overflow: hidden; /* Hide overflow if any */
+}
+
+.left-side video {
+    width: 100%;
+    height: auto;
+    max-height: 40vh; /* Video also takes up a maximum of 40% of the viewport height */
+}
+
+/* Headings */
+h1 {
     text-align: center;
 }
 
-.right-side img {
-    max-width: 100%; /* Ensure the image is responsive and fits within the container */
-    height: auto;
+/* List Styling */
+ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    max-width: 600px;
 }
+
+li {
+    background: #f0f0f0;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Links */
+a {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Buttons */
 button {
     margin-top: 20px;
     padding: 10px 20px;
@@ -45,13 +98,33 @@ button {
     font-size: 18px;
 }
 
-
-
 button:hover {
     background-color: #7c65ffda;
 }
 
-img {
-    max-width: 80%; 
+/* Form Elements */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label, input, button {
+    margin: 10px 0;
+}
+
+.list-group-item img {
+    max-width: 100%;
     height: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .left-side, .right-side {
+        flex: 1 1 100%;
+    }
 }
