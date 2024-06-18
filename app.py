@@ -215,6 +215,14 @@ def get_reacted_images():
     reacted_image_ids = [reaction.image_id for reaction in reacted_images]
     return jsonify(reacted_image_ids)
 
+@app.route('/ranked_users', methods=['GET'])
+@login_required
+def get_ranked_users():
+    user_id = current_user.id
+    ranked_users = rank_users(user_id)
+    return jsonify(ranked_users)
+
+
 def calculate_similarity(user1, user2):
     reactions1 = {reaction.image_id: reaction.reaction_value for reaction in user1.reactions}
     reactions2 = {reaction.image_id: reaction.reaction_value for reaction in user2.reactions}
