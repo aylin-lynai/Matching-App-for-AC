@@ -188,15 +188,25 @@ def home():
     return render_template('startpage.html')
 
 
+@app.route('/analyze_emotions', methods=['POST'])
+def analyze_emotions():
+    data = request.json
+    image_data = data['image_data']
+    analysis_result = analyze_image(image_data)
+    return jsonify(analysis_result)
+
 @app.route('/capture_reaction', methods=['POST'])
 def capture_reaction():
     data = request.json
-    user_id = current_user.id  
-    image_data = data['image_data']
-    current_image_index = data['current_image_index']  # Get current image index from request
-    result = analyze_image(image_data, user_id, current_image_index)
+    user_id = current_user.id
+    reaction_value = data['reaction_value']
+    current_image_index = data['current_image_index']
 
-    return jsonify(result)
+    reaction = Reaction(user_id=user_id, image_id=current_image_index, reaction_value=reaction_value)
+    db.session.add(reaction)
+    db.session.commit()
+
+    return jsonify({"dominant_emotion": None, "reaction_value": reaction_value}), 200
 
 @app.route('/reacted_images', methods=['GET'])
 def get_reacted_images():
@@ -204,6 +214,14 @@ def get_reacted_images():
     reacted_images = Reaction.query.filter_by(user_id=user_id).all()
     reacted_image_ids = [reaction.image_id for reaction in reacted_images]
     return jsonify(reacted_image_ids)
+
+@app.route('/ranked_users', methods=['GET'])
+@login_required
+def get_ranked_users():
+    user_id = current_user.id
+    ranked_users = rank_users(user_id)
+    return jsonify(ranked_users)
+
 
 def calculate_similarity(user1, user2):
     reactions1 = {reaction.image_id: reaction.reaction_value for reaction in user1.reactions}
