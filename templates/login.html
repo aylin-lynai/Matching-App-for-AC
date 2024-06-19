@@ -20,7 +20,7 @@
                 
                 <input type="email" id="email" name="email" placeholder="email" class="input-item"required><br>
               
-                <button id="submit">  Login  </button>   <br>                    
+                <input type="submit" value="Login">  
                 <button id="NewHere">New Here?</button>
             </form>
            
@@ -37,7 +37,7 @@
             window.location.href = '/cameratest';
         });
 
-        document.getElementById('loginForm').getElementById('submit').addEventListener('click', async function(e) {
+        document.getElementById('loginForm').onsubmit = async function(e) {
             e.preventDefault();
             const form = e.target;
             const data = {
@@ -57,7 +57,7 @@
             } else {
                 alert(result.error);
             }
-        });
+        };
     </script>
 </body>
 </html>

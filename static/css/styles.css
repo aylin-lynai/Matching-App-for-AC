@@ -34,7 +34,7 @@ body {
     max-width: 100%; /* Ensure the image is responsive and fits within the container */
     height: auto;
 }
-button {
+input[type=submit],button {
     text-align: center;
     margin-top: 20px;
     padding: 10px 20px;
