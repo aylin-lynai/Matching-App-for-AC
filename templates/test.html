@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Test Page</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <title>Test Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
 <div class="container">
@@ -15,25 +15,25 @@
             <video id="cameraFeed" width="640" height="480" autoplay></video>
         </div>
     </div>
-        
     <div class="right-side">
         <h1>TestPicture</h1>
         <button id="nextButton">Next</button>
-        <button id="resultButton">Jump to Result</button>
+        <button id="resultButton">Jump to Match</button>
     </div>
 </div>
 <script>
 document.getElementById('resultButton').addEventListener('click', function() {
-    window.location.href = '/resultpage'; // jump to Resultpage
+    window.location.href = '/matchpage'; // jump to matchpage
 });
 
 document.addEventListener('DOMContentLoaded', function() {
     const nextButton = document.getElementById('nextButton');
     let availableImages = [];
     let clickCount = 0;
-    let currentImageIndex = 0; // Initialize currentImageIndex
+    let currentImageIndex = 0;
+    let reactionValue = 0;
+    let analyzing = true;
 
-    // Access the user's webcam
     const cameraFeed = document.getElementById('cameraFeed');
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
@@ -48,14 +48,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const images = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', 
                             '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg'];
 
-            // Filter out reacted images
             availableImages = images.filter((_, index) => !reactedImages.includes(index + 1));
-
-            // Initial display of the first image
             if (availableImages.length > 0) {
                 displayImageByIndex(currentImageIndex);
             } else {
-                window.location.href = '/resultpage'; // If no available images, redirect to result page
+                window.location.href = '/matchpage'; // If no available images, redirect to matchpage 
+
             }
         })
         .catch(error => {
@@ -63,13 +61,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     nextButton.addEventListener('click', function() {
-        if (clickCount < availableImages.length) {
-            displayImageByIndex(currentImageIndex); // Pass currentImageIndex to displayImageByIndex
-            captureReaction(currentImageIndex); // Pass currentImageIndex to captureReaction
-            currentImageIndex++;
+        sendCapturedReaction();
+
+        if (clickCount < availableImages.length - 1) {
             clickCount++;
+            currentImageIndex++;
+            displayImageByIndex(currentImageIndex);
+            reactionValue = 0; // Reset reaction value for new image
+            analyzing = true;  // Resume analyzing for new image
         } else {
-            window.location.href = '/resultpage'; // after all available images, jump to resultpage
+            window.location.href = '/matchpage'; // after all available images, jump to matchpage
         }
     });
 
@@ -78,24 +79,47 @@ document.addEventListener('DOMContentLoaded', function() {
             const imgElement = document.getElementById('memeImage');
             imgElement.src = `{{ url_for('static', filename='images/memes/') }}` + availableImages[index];
         } else {
-            window.location.href = '/resultpage'; // After showing all available images, jump to result page
+            window.location.href = '/matchpage'; // After showing all available images, jump to matchpage 
         }
+
     }
 
-    function captureReaction(index) {
+    function captureFrame() {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = cameraFeed.videoWidth;
         canvas.height = cameraFeed.videoHeight;
         context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
-        const imageData = canvas.toDataURL('image/png');
+        return canvas.toDataURL('image/png');
+    }
 
+    function analyzeFrame(imageData) {
+        fetch('/analyze_emotions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image_data: imageData }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.reaction_value === 1) {
+                reactionValue = 1;
+                analyzing = false; // Stop analyzing once a happy reaction is detected
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function sendCapturedReaction() {
         fetch('/capture_reaction', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ image_data: imageData, current_image_index: availableImages[index].split('.')[0] }), // Send current image index
+            body: JSON.stringify({ reaction_value: reactionValue, current_image_index: currentImageIndex + 1 }),
         })
         .then(response => response.json())
         .then(data => {
@@ -106,8 +130,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Display the first random image when the page loads
-    displayRandomImage();
+    setInterval(function() {
+        if (analyzing) { // Only analyze if analyzing is true
+            const imageData = captureFrame();
+            analyzeFrame(imageData);
+        }
+    }, 1000); // Capture frame every second
 });
 </script>
 </body>

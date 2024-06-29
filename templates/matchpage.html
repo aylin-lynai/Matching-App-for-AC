@@ -3,26 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Find one</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
 <div class="container">
     <div class="left-side">
-        <h1>Your matches from best to worse are:</br>
-            Name</br>
-            Email
-            Percentage
-        </h1>
-
+        <h1>Your matches from best to worst are:</h1>
+        <div id="matches">
+            <!-- This is where the matches will be displayed -->
+        </div>
     </div>
     <div class="right-side">
         <img src="{{ url_for('static', filename='images/one.jpg') }}" alt="one">
     </div>
 </div>
-\\<script src="Startscript.js">
-    
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/ranked_users')
+        .then(response => response.json())
+        .then(data => {
+            const matchesContainer = document.getElementById('matches');
+            data.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.innerHTML = `<strong>Name:</strong> ${user.username}<br>
+                                         <strong>Email:</strong> ${user.email}<br>
+                                         <strong>Similarity:</strong> ${(user.similarity * 100).toFixed(2)}%<br><br>`;
+                matchesContainer.appendChild(userElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching ranked users:', error);
+        });
+});
 </script>
 </body>
 </html>
