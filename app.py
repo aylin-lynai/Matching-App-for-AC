@@ -187,7 +187,6 @@ def list_users():
 def home():
     return render_template('startpage.html')
 
-
 @app.route('/analyze_emotions', methods=['POST'])
 def analyze_emotions():
     data = request.json
@@ -199,14 +198,14 @@ def analyze_emotions():
 def capture_reaction():
     data = request.json
     user_id = current_user.id
-    reaction_value = data['reaction_value']
+    happiness_score = data['happiness_score']
     current_image_index = data['current_image_index']
 
-    reaction = Reaction(user_id=user_id, image_id=current_image_index, reaction_value=reaction_value)
+    reaction = Reaction(user_id=user_id, image_id=current_image_index, happiness_score=happiness_score)
     db.session.add(reaction)
     db.session.commit()
 
-    return jsonify({"dominant_emotion": None, "reaction_value": reaction_value}), 200
+    return jsonify({"dominant_emotion": None, "happiness_score": happiness_score}), 200
 
 @app.route('/reacted_images', methods=['GET'])
 def get_reacted_images():
@@ -222,15 +221,14 @@ def get_ranked_users():
     ranked_users = rank_users(user_id)
     return jsonify(ranked_users)
 
-
 def calculate_similarity(user1, user2):
-    reactions1 = {reaction.image_id: reaction.reaction_value for reaction in user1.reactions}
-    reactions2 = {reaction.image_id: reaction.reaction_value for reaction in user2.reactions}
-    
+    reactions1 = {reaction.image_id: reaction.happiness_score for reaction in user1.reactions}
+    reactions2 = {reaction.image_id: reaction.happiness_score for reaction in user2.reactions}
+
     common_reactions = set(reactions1.keys()) & set(reactions2.keys())
     if not common_reactions:
         return 0
-    
+
     similarity = sum(reactions1[image_id] == reactions2[image_id] for image_id in common_reactions) / len(common_reactions)
     return similarity
 
@@ -239,7 +237,7 @@ def rank_users(user_id):
     users = User.query.all()
     similarities = [(other_user, calculate_similarity(user, other_user)) for other_user in users if user != other_user]
     similarities.sort(key=lambda x: x[1], reverse=True)
-    
+
     ranked_users = [{"username": other_user.username, "email": other_user.email, "similarity": similarity} for other_user, similarity in similarities]
     return ranked_users
 

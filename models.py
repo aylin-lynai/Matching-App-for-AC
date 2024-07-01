@@ -44,13 +44,10 @@ class Reaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     image_id = db.Column(db.Integer, db.ForeignKey('images.id'), nullable=False)
-    reaction_value = db.Column(db.Integer, nullable=False) # use db.Integer later for different reactions
-    # alternative for only boolean reactions: is_positive = db.Column(db.Boolean, nullable=False), is_neutral, is_negative
-    # confidence = db.Column(db.Float, nullable=False) - depending on emotion detection use this as confidence of the emotion
+    happiness_score = db.Column(db.Integer, nullable=False)
     user = relationship("User", back_populates="reactions")
     image = relationship("Image", back_populates="reactions")
-    
-    # Add a unique constraint to the combination of user_id and image_id
+
     __table_args__ = (UniqueConstraint('user_id', 'image_id', name='_user_image_uc'),)
 
 

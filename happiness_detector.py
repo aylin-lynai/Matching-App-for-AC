@@ -21,10 +21,9 @@ def analyze_image(image_data):
         face_roi = rgb_frame[y:y + h, x:x + w]
 
         result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
-        dominant_emotion = result[0]['dominant_emotion']
+        emotions = result[0]['emotion']
+        happiness_score = emotions['happy']
 
-        reaction_value = 1 if dominant_emotion == 'happy' else 0
-
-        return {"dominant_emotion": dominant_emotion, "reaction_value": reaction_value}
+        return {"happiness_score": happiness_score}
     else:
-        return {"dominant_emotion": None, "reaction_value": 0}
+        return {"happiness_score": 0}

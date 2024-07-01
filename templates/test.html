@@ -16,127 +16,139 @@
         </div>
     </div>
     <div class="right-side">
-        <h1>TestPicture</h1>
-        <button id="nextButton">Next</button>
+        <h1>Test Picture</h1>
         <button id="resultButton">Jump to Match</button>
     </div>
 </div>
 <script>
-document.getElementById('resultButton').addEventListener('click', function() {
-    window.location.href = '/matchpage'; // jump to matchpage
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        let availableImages = [];
+        let currentImageIndex = 0;
+        let happinessScore = 0;
+        let analyzing = true;
+        let happinessScores = [];
+        const FRAME_INTERVAL = 1000; // Capture frame every second
+        const FRAMES_TO_AVERAGE = 5;
 
-document.addEventListener('DOMContentLoaded', function() {
-    const nextButton = document.getElementById('nextButton');
-    let availableImages = [];
-    let clickCount = 0;
-    let currentImageIndex = 0;
-    let reactionValue = 0;
-    let analyzing = true;
+        // Function to start analyzing frame
+        function startFrameAnalysis() {
+            setInterval(function() {
+                if (analyzing) { // Only analyze if analyzing is true
+                    const imageData = captureFrame();
+                    analyzeFrame(imageData);
+                }
+            }, FRAME_INTERVAL); // Capture frame every second
+        }
 
-    const cameraFeed = document.getElementById('cameraFeed');
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-            cameraFeed.srcObject = stream;
-            cameraFeed.play();
-        });
-    }
+        const cameraFeed = document.getElementById('cameraFeed');
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                cameraFeed.srcObject = stream;
+                cameraFeed.play();
+                startFrameAnalysis(); // Start analyzing frames once camera feed is ready
+            });
+        }
 
-    fetch('/reacted_images')
-        .then(response => response.json())
-        .then(reactedImages => {
-            const images = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', 
-                            '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg'];
+        fetch('/reacted_images')
+            .then(response => response.json())
+            .then(reactedImages => {
+                const images = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', 
+                                '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg'];
+    
+                availableImages = images.filter((_, index) => !reactedImages.includes(index + 1));
+                if (availableImages.length > 0) {
+                    displayImageByIndex(currentImageIndex);
+                    setInterval(nextImage, 5000); // Change image every 5 seconds
+                } else {
+                    window.location.href = '/matchpage'; // If no available images, redirect to matchpage 
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching reacted images:', error);
+            });
+    
+            function nextImage() {
+                // Check if all frames have been analyzed and reaction captured for the current image
+                if (happinessScores.length >= FRAMES_TO_AVERAGE) {
+                    sendCapturedReaction(); // Send the captured reaction for the current image
+                } else {
+                    // If not all frames are analyzed yet, wait and check again after a delay
+                    setTimeout(nextImage, 1000); // Check again after 1 second
+                    return;
+                }
 
-            availableImages = images.filter((_, index) => !reactedImages.includes(index + 1));
-            if (availableImages.length > 0) {
-                displayImageByIndex(currentImageIndex);
+                // Proceed to load the next image if there are more images available
+                if (currentImageIndex < availableImages.length - 1) {
+                    currentImageIndex++;
+                    displayImageByIndex(currentImageIndex);
+                    happinessScore = 0; // Reset happiness score for new image
+                    analyzing = true; // Resume analyzing for new image
+                    happinessScores = []; // Reset happiness scores array
+                } else {
+                    window.location.href = '/matchpage'; // after all available images, jump to matchpage
+                }
+}
+
+    
+        function displayImageByIndex(index) {
+            if (index < availableImages.length) {
+                const imgElement = document.getElementById('memeImage');
+                imgElement.src = `{{ url_for('static', filename='images/memes/') }}` + availableImages[index];
             } else {
-                window.location.href = '/matchpage'; // If no available images, redirect to matchpage 
-
+                window.location.href = '/matchpage'; // After showing all available images, jump to matchpage 
             }
-        })
-        .catch(error => {
-            console.error('Error fetching reacted images:', error);
-        });
-
-    nextButton.addEventListener('click', function() {
-        sendCapturedReaction();
-
-        if (clickCount < availableImages.length - 1) {
-            clickCount++;
-            currentImageIndex++;
-            displayImageByIndex(currentImageIndex);
-            reactionValue = 0; // Reset reaction value for new image
-            analyzing = true;  // Resume analyzing for new image
-        } else {
-            window.location.href = '/matchpage'; // after all available images, jump to matchpage
+        }
+    
+        function captureFrame() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = cameraFeed.videoWidth;
+            canvas.height = cameraFeed.videoHeight;
+            context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/png');
+        }
+    
+        function analyzeFrame(imageData) {
+            fetch('/analyze_emotions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image_data: imageData }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                happinessScores.push(data.happiness_score);
+                if (happinessScores.length >= FRAMES_TO_AVERAGE) {
+                    const totalHappiness = happinessScores.reduce((a, b) => a + b, 0);
+                    const avgHappiness = totalHappiness / FRAMES_TO_AVERAGE;
+                    happinessScore = avgHappiness.toFixed(2); // Round to 2 decimal places
+                    analyzing = false; // Stop analyzing once enough frames are captured
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    
+        function sendCapturedReaction() {
+            fetch('/capture_reaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ happiness_score: happinessScore, current_image_index: currentImageIndex + 1 }), // Send average happiness score
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
         }
     });
-
-    function displayImageByIndex(index) {
-        if (index < availableImages.length) {
-            const imgElement = document.getElementById('memeImage');
-            imgElement.src = `{{ url_for('static', filename='images/memes/') }}` + availableImages[index];
-        } else {
-            window.location.href = '/matchpage'; // After showing all available images, jump to matchpage 
-        }
-
-    }
-
-    function captureFrame() {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = cameraFeed.videoWidth;
-        canvas.height = cameraFeed.videoHeight;
-        context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
-        return canvas.toDataURL('image/png');
-    }
-
-    function analyzeFrame(imageData) {
-        fetch('/analyze_emotions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ image_data: imageData }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.reaction_value === 1) {
-                reactionValue = 1;
-                analyzing = false; // Stop analyzing once a happy reaction is detected
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    }
-
-    function sendCapturedReaction() {
-        fetch('/capture_reaction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reaction_value: reactionValue, current_image_index: currentImageIndex + 1 }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    }
-
-    setInterval(function() {
-        if (analyzing) { // Only analyze if analyzing is true
-            const imageData = captureFrame();
-            analyzeFrame(imageData);
-        }
-    }, 1000); // Capture frame every second
-});
 </script>
+    
 </body>
 </html>
