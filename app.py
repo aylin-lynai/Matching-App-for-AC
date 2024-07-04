@@ -3,26 +3,13 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from models import db, flask_app as app, User, Image, Reaction
 from happiness_detector import analyze_image
 from sqlalchemy.exc import IntegrityError
+from numpy import dot
+from numpy.linalg import norm
 import traceback
-import dummy_data
 
 app.secret_key = 'supersecretkey' 
 image_list = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', 
               '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg']
-
-@app.route('/generate-dummy-data', methods=['POST'])
-def generate_dummy_data():
-    num_users = request.json.get('num_users', 10)
-    num_images = request.json.get('num_images', 10)
-    num_reactions = request.json.get('num_reactions', 50)
-    num_matches = request.json.get('num_matches', 10)
-    
-    dummy_data.add_dummy_users(num_users)
-    dummy_data.add_dummy_images(num_images)
-    dummy_data.add_dummy_reactions(num_reactions)
-    dummy_data.add_dummy_reactions(num_matches)
-    
-    return jsonify({"message": "Dummy data generated"}), 201
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -222,24 +209,29 @@ def get_ranked_users():
     return jsonify(ranked_users)
 
 def calculate_similarity(user1, user2):
+    # Extract happiness scores for common images
     reactions1 = {reaction.image_id: reaction.happiness_score for reaction in user1.reactions}
     reactions2 = {reaction.image_id: reaction.happiness_score for reaction in user2.reactions}
 
-    common_reactions = set(reactions1.keys()) & set(reactions2.keys())
-    if not common_reactions:
-        return 0
+    common_image_ids = set(reactions1.keys()) & set(reactions2.keys())
 
-    similarity = sum(reactions1[image_id] == reactions2[image_id] for image_id in common_reactions) / len(common_reactions)
-    return similarity
+    if not common_image_ids:
+        return 0 
+
+    scores1, scores2 = zip(*[(reactions1[img], reactions2[img]) for img in common_image_ids])
+
+    cosine_similarity = dot(scores1, scores2) / (norm(scores1) * norm(scores2))
+
+    return cosine_similarity
 
 def rank_users(user_id):
     user = User.query.get(user_id)
-    users = User.query.all()
-    similarities = [(other_user, calculate_similarity(user, other_user)) for other_user in users if user != other_user]
-    similarities.sort(key=lambda x: x[1], reverse=True)
+    users = User.query.filter(User.id != user_id).all()
 
-    ranked_users = [{"username": other_user.username, "email": other_user.email, "similarity": similarity} for other_user, similarity in similarities]
-    return ranked_users
+    similarities = [{"username": other_user.username, "email": other_user.email, "similarity": calculate_similarity(user, other_user)} for other_user in users]
+    similarities.sort(key=lambda x: x["similarity"], reverse=True)
+
+    return similarities
 
 
 if __name__ == '__main__':
