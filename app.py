@@ -8,8 +8,9 @@ from numpy.linalg import norm
 import traceback
 
 app.secret_key = 'supersecretkey' 
-image_list = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', 
-              '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg']
+image_list = ['75.jpg', '6.jpg', '95.jpg', '31.jpg', '34.jpg', '83.jpg', '30.jpg', '82.jpg', '11.jpg', '7.jpg', 
+              '88.jpg', '13.jpg', '5.jpg', '4.jpg', '18.jpg', '86.jpg', '79.jpg', '94.jpg', '44.jpg', '77.jpg', '76.jpg', '62.jpg']
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
