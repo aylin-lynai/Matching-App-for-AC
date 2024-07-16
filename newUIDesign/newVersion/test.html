@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+
+<body>
+    <div class="header">
+        <header>
+            <nav>
+                <div class="logo">Matching App</div>
+                <div>
+                    <a href="startPage.html">Home</a>
+                    <a href="aboutus.html">About us</a>
+                    <a href="literature.html">Literatures</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="privacy.html">Privacy</a>
+                
+                    
+                </div>
+            </nav>
+        </header>
+    </div>
+
+    <div class="container">
+        <div class="left-side">
+            <div id="imageContainer">
+                <img src="" id="memeImage" alt="Meme Image">
+            </div>
+            <div>
+                <video id="cameraFeed" width="640" height="480" autoplay></video>
+            </div>
+        </div>
+        <div class="right-side">
+            <h1>TestPicture</h1>
+            <button id="nextButton" class="button">Next</button>
+            <a href="result.html"  class="button">test</a>
+        </div>
+    </div>
+    <script>
+    document.getElementById('resultButton').addEventListener('click', function() {
+        window.location.href = '/matchpage'; // jump to matchpage
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const nextButton = document.getElementById('nextButton');
+        let availableImages = [];
+        let clickCount = 0;
+        let currentImageIndex = 0;
+        let reactionValue = 0;
+        let analyzing = true;
+    
+        const cameraFeed = document.getElementById('cameraFeed');
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                cameraFeed.srcObject = stream;
+                cameraFeed.play();
+            });
+        }
+    
+        fetch('/reacted_images')
+            .then(response => response.json())
+            .then(reactedImages => {
+                const images = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', 
+                                '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg'];
+    
+                availableImages = images.filter((_, index) => !reactedImages.includes(index + 1));
+                if (availableImages.length > 0) {
+                    displayImageByIndex(currentImageIndex);
+                } else {
+                    window.location.href = '/matchpage'; // If no available images, redirect to matchpage 
+    
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching reacted images:', error);
+            });
+    
+        nextButton.addEventListener('click', function() {
+            sendCapturedReaction();
+    
+            if (clickCount < availableImages.length - 1) {
+                clickCount++;
+                currentImageIndex++;
+                displayImageByIndex(currentImageIndex);
+                reactionValue = 0; // Reset reaction value for new image
+                analyzing = true;  // Resume analyzing for new image
+            } else {
+                window.location.href = '/matchpage'; // after all available images, jump to matchpage
+            }
+        });
+    
+        function displayImageByIndex(index) {
+            if (index < availableImages.length) {
+                const imgElement = document.getElementById('memeImage');
+                imgElement.src = `{{ url_for('static', filename='images/memes/') }}` + availableImages[index];
+            } else {
+                window.location.href = '/matchpage'; // After showing all available images, jump to matchpage 
+            }
+    
+        }
+    
+        function captureFrame() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = cameraFeed.videoWidth;
+            canvas.height = cameraFeed.videoHeight;
+            context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/png');
+        }
+    
+        function analyzeFrame(imageData) {
+            fetch('/analyze_emotions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image_data: imageData }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.reaction_value === 1) {
+                    reactionValue = 1;
+                    analyzing = false; // Stop analyzing once a happy reaction is detected
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    
+        function sendCapturedReaction() {
+            fetch('/capture_reaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reaction_value: reactionValue, current_image_index: currentImageIndex + 1 }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    
+        setInterval(function() {
+            if (analyzing) { // Only analyze if analyzing is true
+                const imageData = captureFrame();
+                analyzeFrame(imageData);
+            }
+        }, 1000); // Capture frame every second
+    });
+    </script>
+    </body>
+    </html>
