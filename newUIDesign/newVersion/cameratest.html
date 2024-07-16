@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header">
+            <header>
+                <nav>
+                    <div class="logo">Matching App</div>
+                    <div>
+                        <a href="startPage.html">Home</a>
+                        <a href="aboutus.html">About us</a>
+                        <a href="literature.html">Literatures</a>
+                        <a href="contact.html">Contact</a>
+                        <a href="privacy.html">Privacy</a>
+                    
+                        
+                    </div>
+                </nav>
+            </header>
+        </div>
+            
+        <div class="container">
+            <div class="left-side">
+                <video id="videoElement" autoplay playsinline></video>
+            </div>
+    
+            <div class="right-side">
+                <h2>Please allow MatchingApp <br>
+                to use Camera</h2>
+                <a href="test.html"  class="button">test</a>
+            </div>
+        </div>
+    </div>
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const videoElement = document.getElementById('videoElement');
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        
+            const constraints = {
+                video: true, 
+                audio: false 
+            };
+
+    
+            navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(stream) {  videoElement.srcObject = stream;
+                videoElement.play();
+            })
+            .catch(function(error) {
+                console.error("Error accessing media devices.", error);
+            });
+            } else {
+                alert('Your browser does not support media devices.');
+                return;
+            }
+        });
+
+    </script>
+</body>
+</html>
