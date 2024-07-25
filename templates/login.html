@@ -9,29 +9,26 @@
 <body>
     <div class="container">
         <div class="left-side">
-            <img src="{{ url_for('static', filename='images/Login.jpg') }}" alt="Login">
+            <img src="{{ url_for('static', filename='images/couple_2.jpg') }}" alt="Login">
         </div>
         <div class="right-side">
-            <h2>Login</h2>
-            <form id="loginForm">
-                <label for="username">Username:</label><br>
-                <input type="text" id="username" name="username" required><br>
-                <label for="email">Email:</label><br>
-                <input type="email" id="email" name="email" required><br>
-                <input type="submit" value="Login">
-            </form>
-            <button id="NewHere">New Here?</button>
-            <button id="JumpToTest">JumpToTest</button>
+            <h2>Login Here!</h2>
+            <div>
+                <form id="loginForm">
+                    <label for="username">Username</label><br>
+                    <input type="text" id="username" name="username" required><br>
+                    <label for="email">Email</label><br>
+                    <input type="email" id="email" name="email" required><br>
+                    <input type="submit" value="Login">
+                </form>
+                <button id="NewHere" >New Here?</button>
+            </div>
         </div>
     </div>
 
     <script>
         document.getElementById('NewHere').addEventListener('click', function() {
             window.location.href = '/register';
-        });
-
-        document.getElementById('JumpToTest').addEventListener('click', function() {
-            window.location.href = '/cameratest';
         });
 
         document.getElementById('loginForm').onsubmit = async function(e) {
@@ -50,7 +47,7 @@
             });
             const result = await response.json();
             if (response.ok) {
-                window.location.href = result.redirect;
+                window.location.href = '/cameratest';
             } else {
                 alert(result.error);
             }

@@ -8,8 +8,10 @@ from numpy.linalg import norm
 import traceback
 
 app.secret_key = 'supersecretkey' 
-image_list = ['75.jpg', '6.jpg', '95.jpg', '31.jpg', '34.jpg', '83.jpg', '30.jpg', '82.jpg', '11.jpg', '7.jpg', 
-              '88.jpg', '13.jpg', '5.jpg', '4.jpg', '18.jpg', '86.jpg', '79.jpg', '94.jpg', '44.jpg', '77.jpg', '76.jpg', '62.jpg']
+image_list = ['75.jpg', '6.jpg', '95.jpg', '31.jpg', '34.jpg']
+              
+              # '83.jpg', '30.jpg', '82.jpg', '11.jpg', '7.jpg', 
+              #'88.jpg', '13.jpg', '5.jpg', '4.jpg', '18.jpg', '86.jpg', '79.jpg', '94.jpg', '44.jpg', '77.jpg', '76.jpg', '62.jpg']
 
 
 login_manager = LoginManager()
@@ -210,7 +212,7 @@ def get_ranked_users():
     return jsonify(ranked_users)
 
 def calculate_similarity(user1, user2):
-    # Extract happiness scores for common images
+    
     reactions1 = {reaction.image_id: reaction.happiness_score for reaction in user1.reactions}
     reactions2 = {reaction.image_id: reaction.happiness_score for reaction in user2.reactions}
 

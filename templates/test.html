@@ -6,18 +6,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+<h1>Have Fun with the Memes</h1>
 <div class="container">
     <div class="left-side">
         <div id="imageContainer">
-            <img src="" id="memeImage" alt="Meme Image">
-        </div>
-        <div>
-            <video id="cameraFeed" width="640" height="480" autoplay></video>
+            <img src="" id="memeImage" alt="Meme Image" width="200%" height="auto">
         </div>
     </div>
     <div class="right-side">
-        <h1>Test Picture</h1>
-        <button id="resultButton">Jump to Match</button>
+        <div>
+            <video id="cameraFeed" width="320" height="240" autoplay></video>
+        </div>
     </div>
 </div>
 <script>
@@ -52,8 +51,10 @@
         fetch('/reacted_images')
             .then(response => response.json())
             .then(reactedImages => {
-                const images = ['75.jpg', '6.jpg', '95.jpg', '31.jpg', '34.jpg', '83.jpg', '30.jpg', '82.jpg', '11.jpg', '7.jpg', 
-              '88.jpg', '13.jpg', '5.jpg', '4.jpg', '18.jpg', '86.jpg', '79.jpg', '94.jpg', '44.jpg', '77.jpg', '76.jpg', '62.jpg']
+                const images = ['75.jpg', '6.jpg', '95.jpg', '31.jpg', '34.jpg']
+                
+              //  , '83.jpg', '30.jpg', '82.jpg', '11.jpg', '7.jpg', 
+              //'88.jpg', '13.jpg', '5.jpg', '4.jpg', '18.jpg', '86.jpg', '79.jpg', '94.jpg', '44.jpg', '77.jpg', '76.jpg', '62.jpg']
 
                 availableImages = images.filter((_, index) => !reactedImages.includes(index + 1));
                 if (availableImages.length > 0) {

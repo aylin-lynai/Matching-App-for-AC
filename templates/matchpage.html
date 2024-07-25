@@ -9,13 +9,12 @@
 <body>
 <div class="container">
     <div class="left-side">
-        <h1>Your matches from best to worst are:</h1>
+        <h1>Your matches from best to worst are</h1>
         <div id="matches">
-            <!-- This is where the matches will be displayed -->
         </div>
     </div>
     <div class="right-side">
-        <img src="{{ url_for('static', filename='images/one.jpg') }}" alt="one">
+        <img src="{{ url_for('static', filename='images/couple_4.jpg') }}" alt="one">
     </div>
 </div>
 <script>
@@ -24,9 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             const matchesContainer = document.getElementById('matches');
-            data.forEach(user => {
+            data.forEach((user, index) => {
                 const userElement = document.createElement('div');
-                userElement.innerHTML = `<strong>Name:</strong> ${user.username}<br>
+                const rankNumber = index + 1;
+                userElement.innerHTML = `<strong>${rankNumber}.</strong> ${user.username}<br>
                                          <strong>Email:</strong> ${user.email}<br>
                                          <strong>Similarity:</strong> ${(user.similarity * 100).toFixed(2)}%<br><br>`;
                 matchesContainer.appendChild(userElement);

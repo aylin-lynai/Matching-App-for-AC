@@ -1,9 +1,8 @@
 /* Global Styles */
 body {
     font-family: Arial, sans-serif;
-    background-image: url("../images/background.jpg");
+    background-color:white;
     background-size: cover;
-    background-color: #b3ecff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,13 +17,19 @@ body {
 .container {
     display: flex;
     flex-wrap: wrap;
-    width: 90%;
-    max-width: 1200px;
+    width: 95%;
+    max-width: 2000px;
     align-items: center;
     justify-content: space-around;
     padding: 20px;
+    opacity: 0; /* Start hidden */
+    animation: fadeIn 2s forwards; /* Apply fade-in animation */
 }
-
+@keyframes fadeIn {
+    to {
+        opacity: 1; /* End at full opacity */
+    }
+}
 /* Left and Right Side Panels */
 .left-side, .right-side {
     flex: 1 1 45%;
@@ -59,10 +64,25 @@ body {
     max-height: 40vh; /* Video also takes up a maximum of 40% of the viewport height */
 }
 
+header {
+    background: white;      
+    color: #333;            
+    text-align: center;     
+    padding: 10px 20px;    
+    width: 80%;            
+    height: 30px;        
+    position: fixed;        
+    top: 0;                 
+                
+    z-index: 1000;          
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+}
+
 /* Headings */
 h1 {
-    text-align: center;
+    color: #7A1EA1;
 }
+
 
 /* List Styling */
 ul {
@@ -83,30 +103,59 @@ li {
 a {
     display: block;
     margin-top: 20px;
-    text-align: center;
 }
 
 /* Buttons */
 button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #859bffcc;
-    border: none;
+    background-color: #7A1EA1;
     color: white;
-    border-radius: 10px;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 18px;
+    align-self: flex-start;
+}
+
+#NewHere {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+styled-button {
+    background-color: #7A1EA1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.container {
+    width: 80%; /* 或者您可以设置为固定宽度，例如 1200px */
+    max-width: 1200px; /* 设置一个最大宽度 */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 可选：添加阴影以增强视觉效果 */
 }
 
 button:hover {
-    background-color: #7c65ffda;
+    background-color: #7A1EA1;
 }
 
 /* Form Elements */
 form {
     display: flex;
     flex-direction: column;
+    align-items: flex-start; 
 }
+
 
 label, input, button {
     margin: 10px 0;
@@ -117,8 +166,41 @@ label, input, button {
     height: auto;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+}
+form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #7A1EA1;
+}
+form input[type="text"],
+form input[type="email"] {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #7A1EA1;
+}
+form input[type="submit"] {
+    background-color: #7A1EA1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+form input[type="submit"]:hover {
+    background-color:#7A1EA1;
+}
+
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 2000px) {
     .container {
         flex-direction: column;
         align-items: stretch;
